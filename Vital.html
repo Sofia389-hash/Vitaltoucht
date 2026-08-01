@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vital Touch Therapy — Mobile Massage Therapy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=Work+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --dusk:#3A2E38;
+    --dusk-deep:#2A2129;
+    --parchment:#F1EAD9;
+    --parchment-soft:#F8F4E9;
+    --eucalyptus:#5F7A63;
+    --eucalyptus-deep:#455B49;
+    --brass:#A8823C;
+    --ink:#2B2620;
+    --ink-soft:#5c5346;
+    --line:rgba(43,38,32,0.12);
+    --shadow: 0 20px 40px -20px rgba(42,33,41,0.35);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--parchment);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    font-weight:400;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    letter-spacing:-0.01em;
+    margin:0;
+    color:var(--dusk-deep);
+  }
+  .mono{font-family:'IBM Plex Mono', monospace; letter-spacing:0.02em;}
+  a{color:inherit;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
+  section{position:relative;}
+  img,svg{display:block;}
+
+  /* ---------- Reveal on scroll ---------- */
+  .reveal{opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+  @media (prefers-reduced-motion:reduce){
+    .reveal{opacity:1; transform:none; transition:none;}
+    html{scroll-behavior:auto;}
+  }
+
+  /* ---------- Nav ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(241,234,217,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  nav.wrap{
+    display:flex; align-items:center; justify-content:space-between;
+    padding-top:16px; padding-bottom:16px;
+  }
+  .logo{display:flex; align-items:center; gap:10px;}
+  .logo-mark{width:30px; height:30px;}
+  .logo-word{font-family:'Fraunces', serif; font-size:19px; font-weight:600; color:var(--dusk-deep);}
+  .logo-word span{color:var(--eucalyptus-deep); font-style:italic;}
+  .nav-links{display:flex; align-items:center; gap:28px; font-size:14.5px;}
+  .nav-links a.navlink{
+    text-decoration:none; color:var(--ink-soft); position:relative; padding:4px 0;
+  }
+  .nav-links a.navlink:hover{color:var(--dusk-deep);}
+  .nav-cta{display:flex; gap:10px;}
+  .nav-burger{
+    display:none; width:38px; height:38px; border-radius:8px; border:1px solid var(--line);
+    background:var(--parchment-soft); align-items:center; justify-content:center; cursor:pointer;
+  }
+  .nav-burger svg{width:18px; height:18px;}
+  .mobile-menu{
+    display:none; flex-direction:column; gap:4px; padding:10px 32px 18px;
+    border-top:1px solid var(--line); background:var(--parchment-soft);
+  }
+  .mobile-menu a{
+    padding:12px 4px; font-size:15px; text-decoration:none; color:var(--dusk-deep);
+    border-bottom:1px solid var(--line);
+  }
+  .mobile-menu a:last-child{border-bottom:none;}
+  .mobile-menu.open{display:flex;}
+  @media (max-width:860px){
+    .nav-links a.navlink{display:none;}
+    .nav-burger{display:flex;}
+    .nav-cta .btn-ghost{display:none;}
+  }
+  @media (max-width:480px){
+    .nav-cta .btn{padding:11px 16px; font-size:13.5px;}
+  }
+
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding:13px 24px; border-radius:100px; font-size:14.5px; font-weight:600;
+    text-decoration:none; cursor:pointer; border:1px solid transparent;
+    transition:transform .15s ease, box-shadow .15s ease, background .2s ease;
+    white-space:nowrap;
+  }
+  .btn:active{transform:scale(0.96);}
+  .btn-primary{background:var(--eucalyptus-deep); color:var(--parchment-soft);}
+  .btn-primary:hover{background:var(--dusk-deep);}
+  .btn-outline{background:transparent; color:var(--dusk-deep); border-color:var(--dusk-deep);}
+  .btn-outline:hover{background:var(--dusk-deep); color:var(--parchment-soft);}
+  .btn-ghost{background:var(--parchment-soft); color:var(--dusk-deep); border-color:var(--line);}
+  .btn-block{width:100%;}
+
+  /* ---------- Pulse ribbon (signature element) ---------- */
+  .pulse-divider{width:100%; overflow:hidden; line-height:0;}
+  .pulse-divider svg{width:100%; height:auto;}
+  .pulse-path{
+    stroke-dasharray: 2000;
+    stroke-dashoffset: 2000;
+    animation: draw 2.6s ease forwards;
+  }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+  @media (prefers-reduced-motion:reduce){ .pulse-path{animation:none; stroke-dashoffset:0;} }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    background:var(--dusk-deep);
+    color:var(--parchment-soft);
+    padding:96px 0 70px;
+    overflow:hidden;
+    position:relative;
+  }
+  .hero .wrap{position:relative; z-index:2;}
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; letter-spacing:0.14em;
+    text-transform:uppercase; color:#C9B98A; margin-bottom:18px; display:block;
+  }
+  .hero h1{
+    font-size:clamp(34px, 5.4vw, 58px); color:var(--parchment-soft); line-height:1.06;
+    max-width:820px;
+  }
+  .hero h1 em{ font-style:italic; color:#CBAF7A; }
+  .hero-quote{
+    max-width:540px; margin-top:22px; font-size:17px; color:#DCD2BE; font-style:italic;
+    border-left:2px solid var(--brass); padding-left:16px;
+  }
+  .hero-brand{font-family:'Fraunces', serif; font-size:15px; letter-spacing:0.04em; color:#B8A47A; margin-top:26px;}
+  .hero-ctas{display:flex; gap:14px; margin-top:34px; flex-wrap:wrap;}
+  .hero-meta{
+    margin-top:52px; display:flex; gap:40px; flex-wrap:wrap;
+    padding-top:28px; border-top:1px solid rgba(241,234,217,0.14);
+  }
+  .hero-meta .item .label{font-family:'IBM Plex Mono'; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:#9C8F72;}
+  .hero-meta .item .value{font-size:15px; margin-top:5px; color:var(--parchment-soft);}
+  .hero-bg-line{position:absolute; right:-8%; top:0; height:100%; opacity:0.5;}
+
+  /* ---------- Section headers ---------- */
+  .section{padding:88px 0;}
+  .section-tight{padding-top:60px;}
+  .section-head{max-width:640px; margin-bottom:48px;}
+  .section-head .eyebrow{color:var(--brass);}
+  .section-head h2{font-size:clamp(26px,3.4vw,38px);}
+  .section-head p{color:var(--ink-soft); margin-top:14px; font-size:16px;}
+  .on-dark .section-head h2, .on-dark h2{color:var(--parchment-soft);}
+  .on-dark .section-head p{color:#CBC0A9;}
+
+  /* ---------- About ---------- */
+  .about{display:grid; grid-template-columns:1.1fr 1fr; gap:64px; align-items:center;}
+  @media (max-width:860px){ .about{grid-template-columns:1fr;} }
+  .about-photo{
+    aspect-ratio:4/5; border-radius:18px; overflow:hidden;
+    background:linear-gradient(155deg, var(--eucalyptus) 0%, var(--eucalyptus-deep) 100%);
+    box-shadow:var(--shadow);
+  }
+  .about-photo img{width:100%; height:100%; object-fit:cover; display:block;}
+  .about-photo .ph-label{font-family:'IBM Plex Mono'; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; opacity:0.85;}
+  .about-body p{color:var(--ink-soft); font-size:16.5px;}
+  .about-signature{font-family:'Fraunces', serif; font-style:italic; font-size:20px; margin-top:26px; color:var(--dusk-deep);}
+  .credentials{display:flex; gap:26px; margin-top:28px; flex-wrap:wrap;}
+  .credentials .cred{font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center; gap:8px;}
+  .credentials .dot{width:6px; height:6px; border-radius:50%; background:var(--brass);}
+
+  /* ---------- Service areas ticker ---------- */
+  .areas-band{
+    background:var(--parchment-soft); border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    padding:18px 0; overflow:hidden;
+  }
+  .areas-track{display:flex; gap:40px; white-space:nowrap; animation:scroll-left 26s linear infinite;}
+  .areas-track span{font-family:'IBM Plex Mono'; font-size:13px; color:var(--ink-soft); letter-spacing:0.03em;}
+  @keyframes scroll-left{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+  @media (prefers-reduced-motion:reduce){ .areas-track{animation:none;} }
+
+  /* ---------- Services ---------- */
+  .services-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  @media (max-width:960px){ .services-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:640px){ .services-grid{grid-template-columns:1fr;} }
+  .svc-card{
+    background:var(--parchment-soft); border:1px solid var(--line); border-radius:16px;
+    padding:26px; display:flex; flex-direction:column; gap:14px;
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .svc-card:hover{ transform:translateY(-5px); box-shadow:var(--shadow); }
+  .svc-top{display:flex; align-items:flex-start; justify-content:space-between; gap:10px;}
+  .svc-card h3{font-size:20px;}
+  .svc-icon{width:38px; height:38px; flex-shrink:0; color:var(--eucalyptus-deep);}
+  .svc-best{font-size:13px; color:var(--brass); font-weight:600;}
+  .svc-benefits{font-size:14.5px; color:var(--ink-soft); margin:0; padding:0; list-style:none;}
+  .svc-benefits li{position:relative; padding-left:16px; margin-bottom:6px;}
+  .svc-benefits li::before{content:"·"; position:absolute; left:2px; color:var(--brass); font-weight:700;}
+  .svc-pricing{
+    margin-top:auto; border-top:1px dashed var(--line); padding-top:14px;
+    display:flex; justify-content:space-between; gap:8px;
+  }
+  .svc-pricing .p{text-align:center; flex:1;}
+  .svc-pricing .p .min{font-family:'IBM Plex Mono'; font-size:11px; color:var(--ink-soft);}
+  .svc-pricing .p .price{font-family:'IBM Plex Mono'; font-size:15px; font-weight:500; color:var(--dusk-deep);}
+  .price-note{font-size:12px; color:var(--ink-soft); margin-top:10px; text-align:center; font-style:italic;}
+
+  /* ---------- Testimonials ---------- */
+  .testimonials{background:var(--dusk-deep); color:var(--parchment-soft);}
+  .test-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  @media (max-width:860px){ .test-grid{grid-template-columns:1fr;} }
+  .test-card{
+    background:rgba(241,234,217,0.06); border:1px solid rgba(241,234,217,0.14);
+    border-radius:16px; padding:26px;
+  }
+  .test-quote{font-family:'Fraunces', serif; font-style:italic; font-size:17px; line-height:1.5; color:#EFE7D3;}
+  .test-name{margin-top:18px; font-family:'IBM Plex Mono'; font-size:12.5px; color:#B8A47A;}
+  .stars{color:var(--brass); font-size:13px; margin-bottom:10px; letter-spacing:2px;}
+
+  /* ---------- Booking ---------- */
+  .booking-wrap{
+    background:var(--parchment-soft); border:1px solid var(--line); border-radius:22px;
+    padding:40px; box-shadow:var(--shadow);
+  }
+  @media (max-width:640px){ .booking-wrap{padding:24px;} }
+  .steps-bar{display:flex; gap:8px; margin-bottom:34px;}
+  .steps-bar .seg{flex:1; height:4px; border-radius:4px; background:var(--line); overflow:hidden;}
+  .steps-bar .seg i{display:block; height:100%; width:0%; background:var(--eucalyptus-deep); transition:width .4s ease;}
+  .step-label{font-family:'IBM Plex Mono'; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:var(--brass); margin-bottom:6px;}
+  .step-title{font-size:22px; margin-bottom:24px;}
+  .step{display:none;}
+  .step.active{display:block;}
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:640px){ .field-row{grid-template-columns:1fr;} }
+  .field{margin-bottom:18px;}
+  .field label{display:block; font-size:13.5px; font-weight:600; margin-bottom:7px; color:var(--dusk-deep);}
+  .field input, .field select, .field textarea{
+    width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--line);
+    background:#fff; font-family:'Work Sans'; font-size:14.5px; color:var(--ink);
+  }
+  .field input:focus, .field select:focus, .field textarea:focus, .btn:focus-visible, .navlink:focus-visible{
+    outline:2px solid var(--eucalyptus-deep); outline-offset:2px;
+  }
+  .field textarea{resize:vertical; min-height:80px;}
+
+  .option-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
+  @media (max-width:640px){ .option-grid{grid-template-columns:1fr;} }
+  .option-card{
+    border:1.5px solid var(--line); border-radius:12px; padding:16px; cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .option-card:hover{border-color:var(--eucalyptus);}
+  .option-card.selected{border-color:var(--eucalyptus-deep); background:rgba(95,122,99,0.08);}
+  .option-card h4{font-size:14.5px; margin-bottom:4px; font-family:'Work Sans'; font-weight:600; color:var(--dusk-deep);}
+  .option-card .sub{font-size:12.5px; color:var(--ink-soft);}
+
+  .dur-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:8px;}
+  @media (max-width:640px){ .dur-grid{grid-template-columns:1fr;} }
+  .dur-card{border:1.5px solid var(--line); border-radius:12px; padding:14px; text-align:center; cursor:pointer;}
+  .dur-card.selected{border-color:var(--eucalyptus-deep); background:rgba(95,122,99,0.08);}
+  .dur-card .len{font-family:'IBM Plex Mono'; font-size:15px; color:var(--dusk-deep);}
+  .dur-card .amt{font-size:12.5px; color:var(--ink-soft); margin-top:2px;}
+
+  .deposit-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:640px){ .deposit-grid{grid-template-columns:1fr;} }
+  .deposit-card{border:1.5px solid var(--line); border-radius:12px; padding:18px; cursor:pointer;}
+  .deposit-card.selected{border-color:var(--brass); background:rgba(168,130,60,0.08);}
+  .deposit-card h4{font-size:15.5px; margin-bottom:5px;}
+  .deposit-card p{font-size:13px; color:var(--ink-soft); margin:0;}
+
+  .pay-methods-select{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px;}
+  .pm-chip{
+    border:1.5px solid var(--line); border-radius:100px; padding:9px 16px; font-size:13.5px;
+    cursor:pointer; background:#fff; color:var(--ink-soft);
+  }
+  .pm-chip.selected{border-color:var(--eucalyptus-deep); background:var(--eucalyptus-deep); color:var(--parchment-soft);}
+
+  .step-nav{display:flex; justify-content:space-between; margin-top:30px; gap:12px;}
+  .review-box{background:var(--parchment); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:20px;}
+  .review-row{display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--line); font-size:14px;}
+  .review-row:last-child{border-bottom:none;}
+  .review-row span:first-child{color:var(--ink-soft);}
+  .review-row span:last-child{font-weight:600; text-align:right;}
+
+  .confirm-note{
+    background:rgba(95,122,99,0.09); border:1px solid rgba(95,122,99,0.3); border-radius:12px;
+    padding:14px 16px; font-size:13.5px; color:var(--eucalyptus-deep); margin-top:16px;
+  }
+  .success-panel{text-align:center; padding:30px 10px;}
+  .success-panel .check{width:56px; height:56px; margin:0 auto 18px;}
+  .form-error{color:#A5473A; font-size:13px; margin-top:-8px; margin-bottom:14px; display:none;}
+
+  /* ---------- Payment methods band ---------- */
+  .pay-badges{display:flex; flex-wrap:wrap; gap:12px;}
+  .pay-badge{
+    display:flex; align-items:center; gap:8px; padding:11px 18px; border-radius:100px;
+    background:var(--parchment-soft); border:1px solid var(--line); font-size:13.5px; font-weight:500;
+  }
+  .pay-badge .dot{width:7px; height:7px; border-radius:50%; background:var(--eucalyptus-deep);}
+
+  /* ---------- Contact ---------- */
+  .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:48px;}
+  @media (max-width:860px){ .contact-grid{grid-template-columns:1fr;} }
+  .contact-info .row{display:flex; gap:14px; align-items:flex-start; margin-bottom:22px;}
+  .contact-info .row .ic{width:22px; height:22px; color:var(--eucalyptus-deep); flex-shrink:0; margin-top:2px;}
+  .contact-info .row h4{font-size:15px; margin-bottom:3px;}
+  .contact-info .row p{margin:0; color:var(--ink-soft); font-size:14.5px;}
+
+  /* ---------- Footer ---------- */
+  footer{background:var(--dusk-deep); color:#B8AC90; padding:44px 0 28px;}
+  .foot-top{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px; padding-bottom:26px; border-bottom:1px solid rgba(241,234,217,0.12);}
+  .foot-links{display:flex; gap:24px; font-size:13.5px; flex-wrap:wrap;}
+  .foot-bottom{padding-top:20px; font-size:12.5px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+  footer a{text-decoration:none;}
+  footer .logo-word{color:var(--parchment-soft);}
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <div class="logo">
+      <svg class="logo-mark" viewBox="0 0 40 40" fill="none">
+        <path d="M4 22C9 22 9 10 14 10C19 10 19 30 24 30C29 30 29 14 36 14" stroke="#455B49" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <div class="logo-word">Vital Touch <span>Therapy</span></div>
+    </div>
+    <div class="nav-links">
+      <a class="navlink" href="#about">About</a>
+      <a class="navlink" href="#services">Services</a>
+      <a class="navlink" href="#testimonials">Testimonials</a>
+      <a class="navlink" href="#contact">Contact</a>
+    </div>
+    <div class="nav-cta">
+      <a href="tel:+10000000000" class="btn btn-ghost">Call Now</a>
+      <a href="#booking" class="btn btn-primary">Book Now</a>
+      <button type="button" class="nav-burger" id="nav-burger" aria-label="Open menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a href="#testimonials">Testimonials</a>
+    <a href="#booking">Book Now</a>
+    <a href="#contact">Contact</a>
+    <a href="tel:+10000000000">Call Now</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <svg class="hero-bg-line" viewBox="0 0 200 600" width="420">
+    <path d="M0 40 C 60 40, 60 120, 120 120 S 180 220, 120 220 S 60 320, 120 320 S 180 420, 120 420 S 60 520, 120 520" stroke="#5F7A63" stroke-width="1.4" fill="none" opacity="0.5"/>
+  </svg>
+  <div class="wrap">
+    <span class="eyebrow reveal">Mobile Massage Therapy</span>
+    <h1 class="reveal">Professional Massage Therapy<br><em>Delivered to Your Doorstep.</em></h1>
+    <p class="hero-quote reveal">"Relax. Recover. Rejuvenate. We bring professional massage therapy to the comfort of your home, hotel, or office."</p>
+    <div class="hero-brand reveal">— Vital Touch Therapy</div>
+    <div class="hero-ctas reveal">
+      <a href="#booking" class="btn btn-primary">Book Now</a>
+      <a href="tel:+10000000000" class="btn btn-outline" style="border-color:#8B8069; color:#F1EAD9;">Call Now</a>
+    </div>
+    <div class="hero-meta reveal">
+      <div class="item"><div class="label">Service Areas</div><div class="value">Add your city / metro area here</div></div>
+      <div class="item"><div class="label">Specialties</div><div class="value">Deep Tissue · Sports · Prenatal</div></div>
+      <div class="item"><div class="label">Deposit to Book</div><div class="value">50% or 100% at checkout</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="pulse-divider">
+  <svg viewBox="0 0 1180 40" preserveAspectRatio="none">
+    <path class="pulse-path" d="M0 20 L300 20 L330 6 L360 34 L390 20 L1180 20" stroke="#A8823C" stroke-width="2" fill="none"/>
+  </svg>
+</div>
+
+<!-- SERVICE AREAS TICKER -->
+<div class="areas-band">
+  <div class="areas-track">
+    <span>DOWNTOWN · </span><span>SUBURBS · </span><span>HOTELS · </span><span>CORPORATE OFFICES · </span><span>HOUSE CALLS WITHIN 25 MILES · </span>
+    <span>DOWNTOWN · </span><span>SUBURBS · </span><span>HOTELS · </span><span>CORPORATE OFFICES · </span><span>HOUSE CALLS WITHIN 25 MILES · </span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="section" id="about">
+  <div class="wrap about">
+    <div class="about-photo reveal">
+      <img src="/images.jpg" alt="Massage therapy session">
+    </div>
+    <div class="about-body reveal">
+      <span class="eyebrow" style="color:var(--brass);">About Me</span>
+      <h2 style="font-size:clamp(24px,3vw,32px); margin-bottom:16px;">A premium wellness experience, wherever you are.</h2>
+      <p>At Vital Touch Therapy, our mission is to make professional massage therapy accessible, convenient, and personalized. Whether you're recovering after intense physical activity, dealing with everyday stress, or simply looking to relax, we bring expert massage therapy directly to your location so you can enjoy a premium wellness experience without leaving your home.</p>
+      <p>Every session is tailored to you — your goals, your pressure preference, your space. No commute, no waiting room, just focused, professional care.</p>
+      <div class="about-signature">— Vital Touch Therapy</div>
+      <div class="credentials">
+        <div class="cred"><span class="dot"></span> Licensed &amp; Insured</div>
+        <div class="cred"><span class="dot"></span> Background Checked</div>
+        <div class="cred"><span class="dot"></span> Bring Your Own Table &amp; Linens</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="section" id="services" style="background:var(--parchment-soft); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow" style="color:var(--brass);">Services</span>
+      <h2>Six ways to feel better, in your own space.</h2>
+      <p>Every treatment is available in 60, 90, or 120-minute sessions. Prices below are starting rates — update them to match your actual pricing.</p>
+    </div>
+    <div class="services-grid" id="services-grid"><!-- injected by JS --></div>
+    <div class="price-note">Prices shown are placeholders. Edit the SERVICES array in the code to set your real rates.</div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section testimonials" id="testimonials">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Client Testimonials</span>
+      <h2>What clients say after their first session.</h2>
+    </div>
+    <div class="test-grid">
+      <div class="test-card reveal">
+        <div class="stars">★★★★★</div>
+        <p class="test-quote">"Incredibly professional and made me feel completely at ease. My shoulders haven't felt this loose in years."</p>
+        <div class="test-name">— Thomas Scoot</div>
+      </div>
+      <div class="test-card reveal">
+        <div class="stars">★★★★★</div>
+        <p class="test-quote">"Booked a table-side session at my hotel before a big presentation. Total game changer for my nerves and my back."</p>
+        <div class="test-name">— Natalia James</div>
+      </div>
+      <div class="test-card reveal">
+        <div class="stars">★★★★★</div>
+        <p class="test-quote">"The prenatal massage was so gentle and thoughtful. I finally slept through the night after."</p>
+        <div class="test-name">— Clint Robert</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOOKING -->
+<section class="section" id="booking">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow" style="color:var(--brass);">Book Your Session</span>
+      <h2>Reserve your appointment in four quick steps.</h2>
+      <p>Fill in the details below. Your request is sent straight to us, and we'll confirm your appointment and payment shortly after.</p>
+    </div>
+
+    <div class="booking-wrap reveal">
+      <div class="steps-bar">
+        <div class="seg"><i id="seg1"></i></div>
+        <div class="seg"><i id="seg2"></i></div>
+        <div class="seg"><i id="seg3"></i></div>
+        <div class="seg"><i id="seg4"></i></div>
+      </div>
+
+      <form id="booking-form">
+        <!-- STEP 1: Massage + Duration -->
+        <div class="step active" data-step="1">
+          <div class="step-label">Step 1 of 4</div>
+          <div class="step-title">Choose your massage</div>
+          <div class="option-grid" id="massage-options"></div>
+
+          <div style="margin-top:26px;">
+            <div class="field-row" style="margin-bottom:4px;">
+              <label style="font-size:13.5px; font-weight:600; color:var(--dusk-deep);">Select a duration</label>
+            </div>
+            <div class="dur-grid" id="duration-options"></div>
+          </div>
+
+          <div class="step-nav">
+            <span></span>
+            <button type="button" class="btn btn-primary" onclick="goStep(2)">Continue</button>
+          </div>
+        </div>
+
+        <!-- STEP 2: Date/time + address -->
+        <div class="step" data-step="2">
+          <div class="step-label">Step 2 of 4</div>
+          <div class="step-title">When and where?</div>
+          <div class="field-row">
+            <div class="field">
+              <label for="apt-date">Preferred date</label>
+              <input type="date" id="apt-date" required>
+            </div>
+            <div class="field">
+              <label for="apt-time">Preferred time</label>
+              <input type="time" id="apt-time" required>
+            </div>
+          </div>
+          <div class="field">
+            <label for="apt-address">Full address (home, hotel, or office)</label>
+            <input type="text" id="apt-address" placeholder="Street address, unit/room, city, zip" required>
+          </div>
+          <div class="field">
+            <label for="apt-notes">Anything we should know? (optional)</label>
+            <textarea id="apt-notes" placeholder="Pressure preference, areas of focus, parking instructions, etc."></textarea>
+          </div>
+          <div class="step-nav">
+            <button type="button" class="btn btn-ghost" onclick="goStep(1)">Back</button>
+            <button type="button" class="btn btn-primary" onclick="validateStep2()">Continue</button>
+          </div>
+        </div>
+
+        <!-- STEP 3: Contact info -->
+        <div class="step" data-step="3">
+          <div class="step-label">Step 3 of 4</div>
+          <div class="step-title">Your contact details</div>
+          <p style="color:var(--ink-soft); font-size:14px; margin-top:-10px; margin-bottom:20px;">We'll reply to confirm your booking and send payment instructions.</p>
+          <div class="field-row">
+            <div class="field">
+              <label for="c-name">Full name</label>
+              <input type="text" id="c-name" required>
+            </div>
+            <div class="field">
+              <label for="c-phone">Phone number</label>
+              <input type="tel" id="c-phone" required>
+            </div>
+          </div>
+          <div class="field">
+            <label for="c-email">Email address</label>
+            <input type="email" id="c-email" required>
+          </div>
+          <div class="step-nav">
+            <button type="button" class="btn btn-ghost" onclick="goStep(2)">Back</button>
+            <button type="button" class="btn btn-primary" onclick="validateStep3()">Continue</button>
+          </div>
+        </div>
+
+        <!-- STEP 4: Deposit + payment + review -->
+        <div class="step" data-step="4">
+          <div class="step-label">Step 4 of 4</div>
+          <div class="step-title">Secure your appointment</div>
+
+          <label style="font-size:13.5px; font-weight:600; color:var(--dusk-deep); display:block; margin-bottom:10px;">Choose your payment amount</label>
+          <div class="deposit-grid" id="deposit-options">
+            <div class="deposit-card" data-deposit="50">
+              <h4>50% Deposit</h4>
+              <p>Reserves your appointment. Remaining balance due at your session.</p>
+            </div>
+            <div class="deposit-card" data-deposit="100">
+              <h4>100% Full Payment</h4>
+              <p>Pay in full now — nothing due at your session.</p>
+            </div>
+          </div>
+
+          <label style="font-size:13.5px; font-weight:600; color:var(--dusk-deep); display:block; margin:22px 0 10px;">Preferred payment method</label>
+          <div class="pay-methods-select" id="pay-method-select"></div>
+
+          <div class="review-box" id="review-box" style="margin-top:26px;"></div>
+
+          <div class="confirm-note">After you submit, we'll follow up by email or phone with confirmation and payment instructions for your chosen method.</div>
+          <div class="form-error" id="form-error">Please fill in all required fields before submitting.</div>
+
+          <div class="step-nav">
+            <button type="button" class="btn btn-ghost" onclick="goStep(3)">Back</button>
+            <button type="submit" class="btn btn-primary">Submit Booking Request</button>
+          </div>
+        </div>
+
+        <!-- SUCCESS -->
+        <div class="step" data-step="success">
+          <div class="success-panel">
+            <svg class="check" viewBox="0 0 52 52" fill="none"><circle cx="26" cy="26" r="24" stroke="#455B49" stroke-width="2.5"/><path d="M15 27 L23 35 L38 18" stroke="#455B49" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+            <h3 style="font-size:24px; margin-bottom:10px;">Request received.</h3>
+            <p style="color:var(--ink-soft); max-width:420px; margin:0 auto;">Thank you — your booking request has been sent. We'll reach out by email or phone shortly to confirm your appointment and payment.</p>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- PAYMENT METHODS -->
+<section class="section section-tight" style="background:var(--parchment-soft); border-top:1px solid var(--line);">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow" style="color:var(--brass);">Payment</span>
+      <h2>Flexible ways to pay.</h2>
+      <p>A 50% or 100% deposit confirms every booking. We accept:</p>
+    </div>
+    <div class="pay-badges reveal">
+      <div class="pay-badge"><span class="dot"></span>Gift Card</div>
+      <div class="pay-badge"><span class="dot"></span>PayPal</div>
+      <div class="pay-badge"><span class="dot"></span>Cash App</div>
+      <div class="pay-badge"><span class="dot"></span>Chime</div>
+      <div class="pay-badge"><span class="dot"></span>Zelle</div>
+      <div class="pay-badge"><span class="dot"></span>Venmo</div>
+      <div class="pay-badge"><span class="dot"></span>Cryptocurrency</div>
+      <div class="pay-badge"><span class="dot"></span>Apple Pay</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section" id="contact">
+  <div class="wrap contact-grid">
+    <div class="contact-info reveal">
+      <span class="eyebrow" style="color:var(--brass);">Contact</span>
+      <h2 style="font-size:clamp(24px,3vw,32px); margin:12px 0 26px;">Questions before booking?</h2>
+      <div class="row">
+        <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M4 5h4l2 5-2.5 1.5a11 11 0 0 0 5 5L14 14l5 2v4a2 2 0 0 1-2 2C9 22 2 15 2 7a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="1.6"/></svg>
+        <div><h4>Call or text</h4><p>Add your phone number here</p></div>
+      </div>
+      <div class="row">
+        <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M3 6h18v12H3z" stroke="currentColor" stroke-width="1.6"/><path d="M3 7l9 6 9-6" stroke="currentColor" stroke-width="1.6"/></svg>
+        <div><h4>Email</h4><p>Add your booking email here</p></div>
+      </div>
+      <div class="row">
+        <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-11.5A7 7 0 0 0 5 9.5C5 14.7 12 21 12 21z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="9.5" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg>
+        <div><h4>Service area</h4><p>Add your city / metro area here</p></div>
+      </div>
+    </div>
+    <div class="reveal">
+      <form id="contact-form">
+        <div class="field">
+          <label for="q-name">Name</label>
+          <input type="text" id="q-name" required>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="q-email">Email</label>
+            <input type="email" id="q-email" required>
+          </div>
+          <div class="field">
+            <label for="q-phone">Phone (optional)</label>
+            <input type="tel" id="q-phone">
+          </div>
+        </div>
+        <div class="field">
+          <label for="q-message">Message</label>
+          <textarea id="q-message" placeholder="Ask about availability, pricing, or anything else." required></textarea>
+        </div>
+        <div class="form-error" id="contact-error">Please fill in all required fields.</div>
+        <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="logo-word">Vital Touch Therapy</div>
+      <div class="foot-links">
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#booking">Book Now</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Vital Touch Therapy. All rights reserved.</span>
+      <span>Mobile massage therapy — brought to your doorstep.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   CONFIG — replace with your real Formspree endpoint(s).
+   Sign up free at https://formspree.io, create a form, and
+   paste its endpoint URL below (looks like
+   https://formspree.io/f/abcdwxyz). The same endpoint can be
+   reused for both the booking form and the contact form —
+   Formspree just emails you whatever fields you send it.
+   Until you paste in a real endpoint, forms will fall back to
+   opening the visitor's email app with everything pre-filled.
+========================================================= */
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/mlgqylre";
+const BUSINESS_EMAIL     = "vitaltoucht@gmail.com"; // used for the mailto fallback
+
+const formspreeConfigured = !FORMSPREE_ENDPOINT.includes("YOUR_FORM_ID");
+
+/* ---------------- Mobile menu ---------------- */
+const burger = document.getElementById('nav-burger');
+const mobileMenu = document.getElementById('mobile-menu');
+burger.addEventListener('click', () => {
+  const open = mobileMenu.classList.toggle('open');
+  burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+});
+mobileMenu.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => {
+    mobileMenu.classList.remove('open');
+    burger.setAttribute('aria-expanded', 'false');
+  });
+});
+
+/* ---------------- Reveal on scroll ---------------- */
+const revealEls = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.12 });
+revealEls.forEach(el => io.observe(el));
+
+/* ---------------- Services data ---------------- */
+const SERVICES = [
+  { id:"swedish", name:"Swedish Massage", best:"First-timers & everyday stress",
+    benefits:["Light-to-medium pressure","Improves circulation","Eases everyday tension"],
+    price60:100, price90:140, price120:180 },
+  { id:"deep-tissue", name:"Deep Tissue Massage", best:"Chronic tension & tight muscles",
+    benefits:["Firm, targeted pressure","Breaks up chronic knots","Restores mobility"],
+    price60:115, price90:155, price120:195 },
+  { id:"sports", name:"Sports Massage", best:"Athletes & active lifestyles",
+    benefits:["Pre/post-event recovery","Improves flexibility","Reduces injury risk"],
+    price60:115, price90:155, price120:195 },
+  { id:"prenatal", name:"Prenatal Massage", best:"Expecting mothers (2nd/3rd trimester)",
+    benefits:["Safe, supported positioning","Eases back pain & swelling","Deeply calming"],
+    price60:110, price90:150, price120:190 },
+  { id:"hot-stone", name:"Hot Stone Massage", best:"Deep relaxation & cold sensitivity",
+    benefits:["Heated basalt stones","Melts away deep tension","Boosts circulation"],
+    price60:125, price90:165, price120:205 },
+  { id:"aromatherapy", name:"Aromatherapy Massage", best:"Stress, anxiety & sleep support",
+    benefits:["Custom essential oil blend","Calms mind & body","Supports better sleep"],
+    price60:110, price90:150, price120:190 },
+];
+
+const svcIcon = `<svg class="svc-icon" viewBox="0 0 24 24" fill="none"><path d="M4 13c3 4 6 6 8 6s5-2 8-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M6 9c2-3 4-5 6-5s4 2 6 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+
+const grid = document.getElementById('services-grid');
+grid.innerHTML = SERVICES.map(s => `
+  <div class="svc-card reveal">
+    <div class="svc-top">
+      <h3>${s.name}</h3>
+      ${svcIcon}
+    </div>
+    <div class="svc-best">Best for: ${s.best}</div>
+    <ul class="svc-benefits">${s.benefits.map(b => `<li>${b}</li>`).join('')}</ul>
+    <div class="svc-pricing">
+      <div class="p"><div class="min">60 min</div><div class="price">$${s.price60}</div></div>
+      <div class="p"><div class="min">90 min</div><div class="price">$${s.price90}</div></div>
+      <div class="p"><div class="min">120 min</div><div class="price">$${s.price120}</div></div>
+    </div>
+  </div>
+`).join('');
+document.querySelectorAll('.svc-card.reveal').forEach(el => io.observe(el));
+
+/* ---------------- Booking form state ---------------- */
+let state = { massage:null, duration:null, deposit:null, payMethod:null };
+
+const massageOptionsEl = document.getElementById('massage-options');
+massageOptionsEl.innerHTML = SERVICES.map(s => `
+  <div class="option-card" data-massage="${s.id}">
+    <h4>${s.name}</h4>
+    <div class="sub">Best for: ${s.best}</div>
+  </div>
+`).join('');
+
+const durationOptionsEl = document.getElementById('duration-options');
+function renderDurations(){
+  const s = SERVICES.find(x => x.id === state.massage) || SERVICES[0];
+  durationOptionsEl.innerHTML = `
+    <div class="dur-card" data-dur="60"><div class="len">60 min</div><div class="amt">$${s.price60}</div></div>
+    <div class="dur-card" data-dur="90"><div class="len">90 min</div><div class="amt">$${s.price90}</div></div>
+    <div class="dur-card" data-dur="120"><div class="len">120 min</div><div class="amt">$${s.price120}</div></div>
+  `;
+  bindDurationCards();
+}
+function bindDurationCards(){
+  document.querySelectorAll('.dur-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.dur-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      state.duration = card.dataset.dur;
+    });
+  });
+}
+renderDurations();
+
+document.querySelectorAll('.option-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    state.massage = card.dataset.massage;
+    renderDurations();
+  });
+});
+
+document.querySelectorAll('.deposit-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.deposit-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    state.deposit = card.dataset.deposit;
+  });
+});
+
+const PAY_METHODS = ["Gift Card","PayPal","Cash App","Chime","Zelle","Venmo","Cryptocurrency","Apple Pay"];
+const payMethodSelect = document.getElementById('pay-method-select');
+payMethodSelect.innerHTML = PAY_METHODS.map(m => `<div class="pm-chip" data-method="${m}">${m}</div>`).join('');
+document.querySelectorAll('.pm-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.pm-chip').forEach(c => c.classList.remove('selected'));
+    chip.classList.add('selected');
+    state.payMethod = chip.dataset.method;
+  });
+});
+
+/* ---------------- Step navigation ---------------- */
+function goStep(n){
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.querySelector(`.step[data-step="${n}"]`).classList.add('active');
+  for(let i=1;i<=4;i++){
+    document.getElementById('seg'+i).style.width = i <= n ? '100%' : '0%';
+  }
+  if(n === 4) renderReview();
+  document.getElementById('booking').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function validateStep2(){
+  const date = document.getElementById('apt-date').value;
+  const time = document.getElementById('apt-time').value;
+  const addr = document.getElementById('apt-address').value.trim();
+  if(!state.massage || !state.duration){ alert('Please go back and choose a massage and duration.'); return; }
+  if(!date || !time || !addr){ alert('Please fill in date, time, and address.'); return; }
+  goStep(3);
+}
+function validateStep3(){
+  const name = document.getElementById('c-name').value.trim();
+  const phone = document.getElementById('c-phone').value.trim();
+  const email = document.getElementById('c-email').value.trim();
+  if(!name || !phone || !email){ alert('Please fill in your name, phone, and email.'); return; }
+  goStep(4);
+}
+
+function renderReview(){
+  const s = SERVICES.find(x => x.id === state.massage);
+  const priceKey = 'price' + state.duration;
+  const price = s ? s[priceKey] : '—';
+  document.getElementById('review-box').innerHTML = `
+    <div class="review-row"><span>Massage</span><span>${s ? s.name : '—'}</span></div>
+    <div class="review-row"><span>Duration</span><span>${state.duration} min</span></div>
+    <div class="review-row"><span>Session price</span><span>$${price}</span></div>
+    <div class="review-row"><span>Date &amp; time</span><span>${document.getElementById('apt-date').value} · ${document.getElementById('apt-time').value}</span></div>
+    <div class="review-row"><span>Address</span><span>${document.getElementById('apt-address').value}</span></div>
+    <div class="review-row"><span>Name</span><span>${document.getElementById('c-name').value}</span></div>
+    <div class="review-row"><span>Phone</span><span>${document.getElementById('c-phone').value}</span></div>
+    <div class="review-row"><span>Email</span><span>${document.getElementById('c-email').value}</span></div>
+  `;
+}
+
+/* ---------------- Submit booking ---------------- */
+document.getElementById('booking-form').addEventListener('submit', function(e){
+  e.preventDefault();
+  const errEl = document.getElementById('form-error');
+  if(!state.massage || !state.duration || !state.deposit || !state.payMethod){
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+
+  const s = SERVICES.find(x => x.id === state.massage);
+  const priceKey = 'price' + state.duration;
+  const payload = {
+    _subject: `New Booking Request — ${s.name} (${state.duration} min)`,
+    massage: s.name,
+    duration: state.duration + ' min',
+    price: '$' + s[priceKey],
+    date: document.getElementById('apt-date').value,
+    time: document.getElementById('apt-time').value,
+    address: document.getElementById('apt-address').value,
+    notes: document.getElementById('apt-notes').value,
+    client_name: document.getElementById('c-name').value,
+    client_phone: document.getElementById('c-phone').value,
+    client_email: document.getElementById('c-email').value,
+    deposit: state.deposit + '%',
+    pay_method: state.payMethod,
+  };
+
+  if (formspreeConfigured) {
+    fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload),
+    }).then(res => {
+      if (res.ok) { goStep('success'); } else { sendMailtoFallback(payload); }
+    }).catch(() => {
+      sendMailtoFallback(payload);
+    });
+  } else {
+    sendMailtoFallback(payload);
+  }
+});
+
+function sendMailtoFallback(p){
+  const subject = encodeURIComponent(`New Booking Request — ${p.massage} (${p.duration})`);
+  const body = encodeURIComponent(
+`New booking request from Vital Touch Therapy website:
+
+Massage: ${p.massage}
+Duration: ${p.duration}
+Session price: ${p.price}
+Date: ${p.date}
+Time: ${p.time}
+Address: ${p.address}
+Notes: ${p.notes || '—'}
+
+Client name: ${p.client_name}
+Client phone: ${p.client_phone}
+Client email: ${p.client_email}
+
+Deposit: ${p.deposit}
+Preferred payment method: ${p.pay_method}`
+  );
+  window.location.href = `mailto:${BUSINESS_EMAIL}?subject=${subject}&body=${body}`;
+  goStep('success');
+}
+
+/* ---------------- Contact form ---------------- */
+document.getElementById('contact-form').addEventListener('submit', function(e){
+  e.preventDefault();
+  const name = document.getElementById('q-name').value.trim();
+  const email = document.getElementById('q-email').value.trim();
+  const phone = document.getElementById('q-phone').value.trim();
+  const message = document.getElementById('q-message').value.trim();
+  const errEl = document.getElementById('contact-error');
+  if(!name || !email || !message){ errEl.style.display = 'block'; return; }
+  errEl.style.display = 'none';
+
+  const payload = { _subject: `Website inquiry from ${name}`, from_name:name, from_email:email, from_phone:phone||'—', message };
+
+  const finish = () => {
+    alert("Thanks — your message has been sent. We'll get back to you shortly.");
+    document.getElementById('contact-form').reset();
+  };
+  const mailtoFallback = () => {
+    const subject = encodeURIComponent(`Website inquiry from ${name}`);
+    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nPhone: ${phone||'—'}\n\nMessage:\n${message}`);
+    window.location.href = `mailto:${BUSINESS_EMAIL}?subject=${subject}&body=${body}`;
+  };
+
+  if (formspreeConfigured) {
+    fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload),
+    }).then(res => { res.ok ? finish() : mailtoFallback(); }).catch(mailtoFallback);
+  } else {
+    mailtoFallback();
+  }
+});
+</script>
+</body>
+</html>
