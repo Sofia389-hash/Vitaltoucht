@@ -56,11 +56,13 @@
 
   /* ---------- Nav ---------- */
   header{
-    position:sticky; top:0; z-index:50;
+    position:fixed; top:0; left:0; width:100%; z-index:50;
     background:rgba(241,234,217,0.92);
     backdrop-filter:blur(8px);
     border-bottom:1px solid var(--line);
   }
+  body{ padding-top:var(--header-h, 76px); }
+  section{ scroll-margin-top:var(--header-h, 76px); }
   nav.wrap{
     display:flex; align-items:center; justify-content:space-between;
     padding-top:16px; padding-bottom:16px;
@@ -83,6 +85,8 @@
   .mobile-menu{
     display:none; flex-direction:column; gap:4px; padding:10px 32px 18px;
     border-top:1px solid var(--line); background:var(--parchment-soft);
+    position:absolute; top:100%; left:0; width:100%;
+    box-shadow:0 12px 24px -12px rgba(42,33,41,0.25);
   }
   .mobile-menu a{
     padding:12px 4px; font-size:15px; text-decoration:none; color:var(--dusk-deep);
@@ -438,7 +442,7 @@
   <div class="wrap">
     <div class="section-head reveal">
       <span class="eyebrow">Client Testimonials</span>
-      <h2>What clients say after their first session.</h2>
+      <h2 style="color: white;">What clients say after their first session.</h2>
     </div>
     <div class="test-grid">
       <div class="test-card reveal">
@@ -708,6 +712,17 @@ mobileMenu.querySelectorAll('a').forEach(a => {
     burger.setAttribute('aria-expanded', 'false');
   });
 });
+
+/* ---------------- Fixed header height sync ---------------- */
+const navBar = document.querySelector('header nav.wrap');
+function syncHeaderHeight(){
+  document.documentElement.style.setProperty('--header-h', navBar.offsetHeight + 'px');
+}
+syncHeaderHeight();
+window.addEventListener('resize', syncHeaderHeight);
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(syncHeaderHeight);
+}
 
 /* ---------------- Reveal on scroll ---------------- */
 const revealEls = document.querySelectorAll('.reveal');
